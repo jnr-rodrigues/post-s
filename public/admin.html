@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="description" content="">
+  <meta name="author" content="jnr-rodrigues">
+  <meta name="robots" content="noindex, nofollow">
+
+  <link rel="icon" type="image/png" href="/appIcon.png" />
+  <title>Post's: Admin</title>
+
+  <meta http-equiv="Content-Security-Policy"
+    content="script-src 'self' static.cloudflareinsights.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net/npm/chart.js 'unsafe-inline'; style-src 'self' https://www.w3schools.com https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com 'unsafe-inline'; img-src 'self' http://localhost:8080 https://onny.discloud.app data:; connect-src 'self' http://localhost:8080 https://onny.discloud.app; default-src 'none'">
+
+  <!-- External Stylesheets -->
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="/css/w3.css">
+  <link rel="stylesheet" href="/css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+
+  <!-- External Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Custom Scripts -->
+  <script src="/scripts/security.js"></script>
+  <script src="/scripts/admin.js"></script>
+</head>
+
+<body id="pageTop"
+  style="background-color: #2b2d31; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;">
+
+  <div id="pageContent" style="margin-left: 20px; margin-right: 20px;">
+    <div class="transition-screen" id="transition-screen">
+      <div class="transition-screen-content">
+        <i class="fas fa-torii-gate w3-text-white" style="animation: popIn 1s infinite; margin-top: -30px"></i>
+      </div>
+    </div>
+
+    <div id="iconBannerPage"
+      style="background-color: #1e1f22; padding-bottom: 50px; border-radius: 50px; margin-top: -100px; padding-top: 100px; margin-left: 80px; margin-right: 80px; height: 250px;">
+      <!-- Banner da Página -->
+      <div
+        style="text-align: left; position: flex; margin-top: 40px; margin-bottom: 40px; margin-left: 50px; margin-right: 50px;">
+        <div style="display: inline-block; vertical-align: middle; margin: 5px;">
+          <img id="iconGuild" src="/appIcon.png" style="width: 50px; border-radius: 10px; display: inline-block"
+            alt="icon" />
+        </div>
+        <div style="display: inline-block; vertical-align: middle; margin: 5px">
+          <h4 class="w3-text-white"
+            style="text-align: left;opacity: 0; transform: translateY(-100%); animation: slideIn 0.5s forwards;">
+            <!-- Mensagem de Boas-Vindas -->
+            Você está acessando essa página como: <b style="color: #4070DC;"><a href="/"
+                style="text-decoration: none;">Administrador(a)</a></b>
+          </h4>
+          <p class="w3-text-gray"
+            style="text-align: left; font-size: 15px; margin-top: -10px;opacity: 0; transform: translateY(-100%); animation: slideIn 0.5s forwards;">
+            <!-- Descrição da Página -->
+            Aqui, você pode criar novas postagens ou editar, ocultar, reexibir e excluir as postagens existentes.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <br>
+
+    <div id="newPostForm"
+      style="background-color: #1e1f22; border-radius: 10px; margin: 20px; padding: 20px; animation: popIn 0.5s; width: 50%; margin-left: 25%;">
+      <div style="display: inline-block; vertical-align: middle; margin-left: 10px;">
+
+        <h4 class="w3-text-white" style="text-align: left; font-size: 17px;">
+          <input type="text" id="postTitle" name="postTitle"
+            style="color: #fff; background-color: #1e1f22; border: 0px; width: 100%;" required
+            placeholder="Clique para colocar o título.">
+        </h4>
+        <p id="postTimestamp" class="w3-text-gray" style="text-align: left; font-size: 15px; margin-top: -10px;">
+          Enviada em 32 de fevereiro de 2015 às 25:92.
+        </p>
+
+      </div>
+
+      <br>
+
+      <div class="w3-text-gray" style="margin: 20px;">
+        <textarea id="postContent" name="postContent" class="w3-text-gray"
+          style="width: 100%; background-color: #1e1f22; border-color: #2b2b2b; padding: 10px; border-radius: 10px;"
+          placeholder="Clique para colocar o conteúdo da postagem." required></textarea>
+        <br>
+        <button class="text-editor-btn" onclick="applyTextFormat('bold')">Negrito</button>
+        <button class="text-editor-btn" onclick="applyTextFormat('italic')">Itálico</button>
+        <button class="text-editor-btn" onclick="applyTextFormat('strikethrough')">Cortado</button>
+        <button class="text-editor-btn" onclick="applyTextFormat('mark')">Marcado</button>
+
+        <!-- Adicionando um dropdown para a cor do texto -->
+        <div class="dropdown" style="display: inline-block; ">
+          <button class="text-editor-btn"
+            style="background-color: #2b2d31; background-size: cover; color: white; padding: 5px; border: none; cursor: pointer;">Colorido</button>
+          <div class="dropdown-content">
+            <select id="color-dropdown"
+              style="width: 100%; border-radius: 5px; background-color: #1e1f22; color: #fff;">
+              <option value="#ffcccc">Vermelho</option>
+              <option value="#ffff00">Amarelo</option>
+              <option value="#00ff00">Verde</option>
+              <option value="#00ffff">Azul</option>
+              <option value="#ffffff">Branco</option>
+            </select>
+            <br>
+            <button onclick="applyTextFormat('color-dropdown')"
+              style="margin-top: 5px; width: 100%; border-radius: 5px;">Aplicar</button>
+          </div>
+        </div>
+
+        <!-- Adicionando um dropdown para o gradiente do texto -->
+        <div class="dropdown" style="display: inline-block;">
+          <button class="text-editor-btn"
+            style="background-color: #2b2d31; background-size: cover; color: white; padding: 5px; border: none; cursor: pointer;">Gradiente</button>
+          <div class="dropdown-content">
+            <select id="gradient-dropdown"
+              style="width: 100%; border-radius: 5px; background-color: #1e1f22; color: #fff;">
+              <option value="linear-gradient(to right, #ffcccc, #ff6666)">Vermelho</option>
+              <option value="linear-gradient(to right, #ffff00, #00ff00)">Amarelo</option>
+              <option value="linear-gradient(to right, #00ff00, #00ffff)">Verde</option>
+              <option value="linear-gradient(to right, #00ffff, #0000ff)">Azul</option>
+            </select>
+            <br>
+            <button onclick="applyTextFormat('gradient-dropdown')"
+              style="margin-top: 5px; width: 100%; border-radius: 5px;">Aplicar</button>
+          </div>
+        </div>
+
+        <div id="custom-InsertImageDiv"
+          style="cursor: pointer; margin: 0 5px; padding: 5px; border: none; border-radius: 3px; font-size: 14px; background-color: #2b2d31; color: #fff; margin-top: 10px; display: inline-block; cursor: pointer;">
+          <label for="attachment" style="cursor: pointer;" id="custom-InsertImageButton">Inserir imagens</label>
+          <input type="file" style="cursor: pointer;" id="attachment" name="attachment" accept="image/*" multiple
+            onchange="handleFileChange(event)">
+        </div>
+
+        <br>
+
+      </div>
+
+      <p class="w3-text-gray" style="margin-left: 30px;">Selecione o texto e clique nos botões para aplicar efeitos!</p>
+      <br>
+
+      <button onclick="addNewPost()"
+        style="margin: 10px; border-radius: 10px; background-color: transparent; color: #4070DC; border: 0px; cursor: pointer;"><b>Adicionar
+          postagem!</b></button>
+    </div>
+
+    <br>
+
+    <div style="margin-left: 100px; margin-top: 10px; margin-bottom: 10px; margin-left: 100px;">
+      <p id="addme_text"
+        style="color: #757575; text-align: left; font-size: 15px; opacity: 0; animation: slideIn 0.5s forwards;">
+
+        <b style="color: #4070DC;"><a href="/logout" style="text-decoration: none;"><i class="fa fa-share"
+              style="font-size: 15px; vertical-align: middle;"></i> Desconectar-se!</a></b>
+        <br><br>
+        As postagens estão sincronizadas em tempo real com um banco de dados! O download do arquivo base tem essa
+        sincronização desativada.
+        <br><a href="/" class="discord-button discord-link" style="margin-top: -10px; margin-left: 5px;"><i
+            class="fa fa-user" style="font-size: 15px; vertical-align: middle;"></i> Acessar página como
+          Colaborador(a)</a>
+
+      </p>
+    </div>
+
+    <br>
+
+    <input type="text" id="searchInput"
+      style="background-color: #1E1F22; color: #fff; margin: 10px; padding: 10px; border-radius: 10px; border: 0px; width: 50%; margin-left: 25%;"
+      placeholder="Buscar postagens..." oninput="searchPosts()" />
+    <br>
+
+    <div id="pathnotes"
+      style="width: 60%; text-align: left; position: absolute; left: 50%; transform: translate(-50%); padding-bottom: 300px;">
+    </div>
+
+    <div id="sucess_bar" class="mac-dock" style="bottom: 10px;">
+      <p
+        style="background-color: #5865F2; color: #fff; width: 50%; padding: 0px; margin: 0px; border-radius: 10px; text-align: center;">
+        <span id="sucess_text"></span>
+      </p>
+    </div>
+
+    <div id="warn_bar" class="mac-dock" style="bottom: 10px;">
+      <p
+        style="background-color: #ED4245; color: #fff; width: 50%; padding: 0px; margin: 0px; border-radius: 10px; text-align: center;">
+        <span id="warn_text"></span>
+      </p>
+    </div>
+
+    <br>
+
+  </div>
+</body>
+
+</html>

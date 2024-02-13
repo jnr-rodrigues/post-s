@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="jnr-rodrigues">
+    <meta name="robots" content="noindex, nofollow">
+
+    <link rel="icon" type="image/png" href="/appIcon.png" />
+    <title>Post's: Usuário</title>
+
+    <meta http-equiv="Content-Security-Policy"
+        content="script-src 'self' static.cloudflareinsights.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net/npm/chart.js 'unsafe-inline'; style-src 'self' https://www.w3schools.com https://cdnjs.cloudflare.com https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://fonts.gstatic.com 'unsafe-inline'; img-src 'self' http://localhost:8080 https://onny.discloud.app data:; connect-src 'self' http://localhost:8080 https://onny.discloud.app; default-src 'none'">
+
+    <!-- External Stylesheets -->
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="/css/w3.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins">
+
+    <!-- External Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/js/all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Custom Scripts -->
+    <script src="/scripts/security.js"></script>
+    <script src="/scripts/index.js"></script>
+</head>
+
+<body id="pageTop"
+    style="background-color: #2b2d31; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;">
+    <div id="pageContent" style="margin-left: 20px; margin-right: 20px;">
+
+        <!-- Modal -->
+        <div class="modal" id="popupLogin">
+            <div class="modal-content">
+                <p class="w3-text-white" style="font-size: 24px; margin-top: -10px;"><b style="color: #4070DC;">Entre
+                        como admin!</b></p><br>
+                <p class="w3-text-white" style="font-size: 16px; margin-top: -50px;">É necessário ter um acesso
+                    administrador para acessar essa página.</p>
+                <br>
+                <form id="loginForm" onsubmit="attemptLogin(); return false;">
+                    <label style="color: #fff;" for="username">Usuário:</label><br>
+                    <input type="text" id="username" name="username" required>
+                    <br><br>
+                    <label style="color: #fff;" for="password">Senha:</label><br>
+                    <input type="password" id="password" name="password" required>
+                    <br><br><br>
+                    <button type="submit"
+                        style="background-color: #4070DC; color: #fff; padding: 10px; border-radius: 10px; border: 0px; cursor: pointer;">Entrar!</button>
+                    <b style="color: #4070DC; margin-left: 25px;"><a onclick="closeLoginPopup()"
+                            style="text-decoration: none; cursor: pointer;">Não quero fazer login agora!</a></b>
+                </form>
+            </div>
+        </div>
+
+        <!-- Conteúdo da Página -->
+        <div class="transition-screen" id="transition-screen">
+            <div class="transition-screen-content">
+                <!-- Ícone de Transição -->
+                <i class="fas fa-torii-gate w3-text-white" style="animation: popIn 1s infinite; margin-top: -30px"></i>
+            </div>
+        </div>
+
+        <div id="iconBannerPage"
+            style="background-color: #1e1f22; padding-bottom: 50px; border-radius: 50px; margin-top: -100px; padding-top: 100px; margin-left: 80px; margin-right: 80px; height: 250px;">
+            <!-- Banner da Página -->
+            <div
+                style="text-align: left; position: flex; margin-top: 40px; margin-bottom: 40px; margin-left: 50px; margin-right: 50px;">
+                <div style="display: inline-block; vertical-align: middle; margin: 5px;">
+                    <img id="iconGuild" src="/appIcon.png"
+                        style="width: 50px; border-radius: 10px; display: inline-block" alt="icon" />
+                </div>
+                <div style="display: inline-block; vertical-align: middle; margin: 5px">
+                    <h4 class="w3-text-white"
+                        style="text-align: left;opacity: 0; transform: translateY(-100%); animation: slideIn 0.5s forwards;">
+                        <!-- Mensagem de Boas-Vindas -->
+                        Você está acessando essa página como: <b style="color: #4070DC;"><a
+                                id="redirectAdminButtonBanner" onclick="openLoginPopup()"
+                                style="text-decoration: none; cursor: pointer;">Colaborador(a)</a></b>
+                    </h4>
+                    <p class="w3-text-gray"
+                        style="text-align: left; font-size: 15px; margin-top: -10px;opacity: 0; transform: translateY(-100%); animation: slideIn 0.5s forwards;">
+                        <!-- Descrição da Página -->
+                        Explore as postagens, busque e filtre conforme sua necessidade!
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de Busca -->
+        <div id="searchDiv"
+            style="width: 50%; transform: translate(50%); display: flex; justify-content: space-between; align-items: center;">
+            <input type="text" id="searchInput"
+                style="background-color: #1E1F22; color: #fff; margin: 10px; padding: 10px; border-radius: 10px; border: 0px; flex: 1;"
+                placeholder="Buscar postagens..." oninput="searchPosts()" />
+            <select id="dropdownOrdem"
+                style="padding: 10px; border: 0px; border-radius: 10px; background-color: #1e1f22; color: #fff;"
+                onchange="searchPosts()">
+                <option value="crescente">Mais recente!</option>
+                <option value="decrescente">Mais antigo!</option>
+            </select>
+        </div>
+
+        <!-- Mensagem para Download -->
+        <div id="messageForDownload"
+            style="margin-left: 100px; margin-top: 10px; margin-bottom: 10px; margin-left: 100px;">
+            <p id="addme_text"
+                style="color: #757575; text-align: left; font-size: 15px; opacity: 0; animation: slideIn 0.5s forwards;">
+                <!-- Mensagem para Download -->
+                Compartilhe as postagens fazendo o download do arquivo base de postagens!
+                <br><a onclick="downloadPage()" class="discord-button discord-link"
+                    style="margin-top: -10px; margin-left: 5px;"><i class="fa fa-arrow-down"
+                        style="font-size: 15px; vertical-align: middle;"></i> Download: Arquivo base de
+                    postagens.</a>
+            </p>
+        </div>
+
+        <!-- Outros Elementos da Página -->
+        <div id="pathnotes"
+            style="width: 60%; text-align: left; position: absolute; left: 50%; transform: translate(-50%); padding-bottom: 400px;">
+        </div>
+
+        <br>
+
+        <div id="sucess_bar" class="mac-dock" style="bottom: 10px;">
+            <p
+                style="background-color: #5865F2; color: #fff; width: 50%; padding: 0px; margin: 0px; border-radius: 10px; text-align: center;">
+                <span id="sucess_text"></span>
+            </p>
+        </div>
+
+        <div id="warn_bar" class="mac-dock" style="bottom: 10px;">
+            <p
+                style="background-color: #ED4245; color: #fff; width: 50%; padding: 0px; margin: 0px; border-radius: 10px; text-align: center;">
+                <span id="warn_text"></span>
+            </p>
+        </div>
+    </div>
+</body>
+
+<script>
+    function getClosestNote() {
+        const viewportHeight = window.innerHeight;
+        const scrollTop = window.scrollY;
+        const centerY = viewportHeight / 2 + scrollTop;
+
+        const notes = document.querySelectorAll('.notes');
+        let closestNote = null;
+        let closestDistance = Infinity;
+
+        notes.forEach((note) => {
+            const rect = note.getBoundingClientRect();
+            const noteTop = rect.top + scrollTop;
+            const noteBottom = rect.bottom + scrollTop;
+
+            // Calcula a distância entre o centro da tela e a postagem
+            const distance = Math.abs(centerY - (noteTop + noteBottom) / 2);
+
+            // Atualiza a postagem mais próxima se a distância for menor
+            if (distance < closestDistance) {
+                closestNote = note;
+                closestDistance = distance;
+            }
+        });
+
+        return closestNote;
+    }
+
+    function setClosestNoteInFocus() {
+        const closestNote = getClosestNote();
+
+        if (closestNote) {
+            // Remove a classe 'focused' de todas as postagens
+            const allNotes = document.querySelectorAll('.notes');
+            allNotes.forEach(note => note.classList.remove('focused'));
+
+            // Adiciona a classe 'focused' à postagem mais próxima ao centro
+            closestNote.classList.add('focused');
+        }
+    }
+
+    window.addEventListener('scroll', setClosestNoteInFocus);
+    setClosestNoteInFocus();
+</script>
+
+</html>
