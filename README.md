@@ -14,6 +14,8 @@ Refine seus resultados com filtros intuitivos, tornando a busca mais eficiente.
 
 ## Recursos para Administradores:
 
+![image](https://github.com/jnr-rodrigues/post-s/assets/44007416/b3e73979-4d66-4c86-8fb8-9f2ccb42498a)
+
 Gerencie todas as postagens de forma centralizada e eficiente através do painel de admin.
 Adicione novas postagens de maneira fácil e rápida, personalizando o conteúdo para atender às necessidades da comunidade.
 Edite postagens existentes para manter o conteúdo atualizado e relevante.
