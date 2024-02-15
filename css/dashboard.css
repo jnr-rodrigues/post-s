@@ -1219,6 +1219,15 @@ body {
   opacity: 0;
 }
 
+#categoryIconAttachment {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 100px;
+  cursor: pointer;
+  opacity: 0;
+}
+
 .popupLogin {
   display: none;
   position: fixed;
@@ -1286,4 +1295,22 @@ body {
 
 #postTitle::placeholder {
   color: white;
+}
+
+#categoryName::placeholder {
+  color: white;
+}
+
+@keyframes blink {
+
+  0%,
+  50%,
+  100% {
+    scale: 1.1;
+  }
+
+  25%,
+  75% {
+    scale: 1;
+  }
 }

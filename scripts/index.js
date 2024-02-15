@@ -153,15 +153,30 @@ function criarPostagens(postagens, searchTerm, ordem) {
         dataP.style.marginTop = '-10px';
         dataP.textContent = `${postagem.date}.`;
 
-        const idP = document.createElement('p');
-        idP.className = 'w3-text-gray';
-        idP.style.textAlign = 'right';
-        idP.style.textAlign = 'left';
-        idP.style.fontSize = '15px';
-        idP.innerHTML = `<i class="fa fa-paperclip" aria-hidden="true"></i> ${postagem.postId}`;
+        const categoriasDiv = document.createElement('div');
+        categoriasDiv.className = 'w3-text-gray';
+        categoriasDiv.style.marginTop = '-10px';
+
+        if (postagem.categories && postagem.categories.length > 0) {
+            postagem.categories.forEach(categoryName => {
+                const categoriaP = document.createElement('p');
+                categoriaP.style.backgroundColor = "#4070DC"
+                categoriaP.style.padding = '5px';
+                categoriaP.style.paddingLeft = '15px';
+                categoriaP.style.paddingRight = '15px';
+                categoriaP.style.borderRadius = '15px';
+                categoriaP.style.color = "#fff";
+                categoriaP.style.width = "fit-content";
+                categoriaP.style.fontSize = "12px";
+                categoriaP.style.textAlign = 'center';
+                categoriaP.textContent = `${categoryName}`;
+                categoriasDiv.appendChild(categoriaP);
+            });
+        }
 
         conteudoDiv.appendChild(tituloH4);
         conteudoDiv.appendChild(dataP);
+        conteudoDiv.appendChild(categoriasDiv);
 
         const infoDiv = document.createElement('div');
         infoDiv.style.display = 'inline-block';
@@ -171,6 +186,13 @@ function criarPostagens(postagens, searchTerm, ordem) {
         infoDiv.style.textAlign = 'right';
         infoDiv.style.cursor = "pointer";
         infoDiv.addEventListener('click', () => copyText(postagem.postId));
+
+        const idP = document.createElement('p');
+        idP.className = 'w3-text-gray';
+        idP.style.textAlign = 'right';
+        idP.style.textAlign = 'left';
+        idP.style.fontSize = '15px';
+        idP.innerHTML = `<i class="fa fa-paperclip" aria-hidden="true"></i> ${postagem.postId}`;
 
         infoDiv.appendChild(idP);
 
@@ -203,16 +225,22 @@ function criarPostagens(postagens, searchTerm, ordem) {
         }
 
         if (postagem.visible == "true") {
-            if (searchTerm && (postagem.title.toLowerCase().includes(searchTerm) || postagem.description.toLowerCase().includes(searchTerm) || postagem.postId.toLowerCase().includes(searchTerm))) {
+            if (searchTerm && (
+                postagem.title.toLowerCase().includes(searchTerm) ||
+                postagem.description.toLowerCase().includes(searchTerm) ||
+                postagem.postId.toLowerCase().includes(searchTerm) ||
+                (postagem.categories && postagem.categories.some(category => category.toLowerCase().includes(searchTerm)))
+            )) {
                 container.appendChild(postagemDiv);
             } else if (!searchTerm) {
                 container.appendChild(postagemDiv);
             }
-        };
+        }
 
         setClosestNoteInFocus();
     });
 }
+
 
 async function copyText(text) {
     const inputElement = document.createElement('input');
@@ -367,7 +395,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fetch('/check/admin')
         .then(response => {
-            if (response.status === 200) {
+            if (response.ok) { // Verifica se a resposta está no intervalo 200-299 (OK)
                 button.removeAttribute('onclick');
                 button.setAttribute('href', '/admin');
             } else {

@@ -43,23 +43,23 @@
     </div>
 
     <div id="iconBannerPage"
-      style="background-color: #1e1f22; padding-bottom: 50px; border-radius: 50px; margin-top: -100px; padding-top: 100px; margin-left: 80px; margin-right: 80px; height: 250px;">
+      style="background-color: #1e1f22; border-radius: 50px; margin-top: -100px; padding-top: 100px; margin-left: 80px; margin-right: 80px; height: auto; position: relative; z-index: 1;">
       <!-- Banner da Página -->
       <div
-        style="text-align: left; position: flex; margin-top: 40px; margin-bottom: 40px; margin-left: 50px; margin-right: 50px;">
+        style="text-align: left; position: relative; margin-top: 40px; margin-bottom: 40px; margin-left: 50px; margin-right: 50px; z-index: 2;">
         <div style="display: inline-block; vertical-align: middle; margin: 5px;">
           <img id="iconGuild" src="/appIcon.png" style="width: 50px; border-radius: 10px; display: inline-block"
             alt="icon" />
         </div>
         <div style="display: inline-block; vertical-align: middle; margin: 5px">
           <h4 class="w3-text-white"
-            style="text-align: left;opacity: 0; transform: translateY(-100%); animation: slideIn 0.5s forwards;">
+            style="text-align: left; opacity: 0; transform: translateY(-100%); animation: slideIn 0.5s forwards; z-index: 2;">
             <!-- Mensagem de Boas-Vindas -->
             Você está acessando essa página como: <b style="color: #4070DC;"><a href="/"
                 style="text-decoration: none;">Administrador(a)</a></b>
           </h4>
           <p class="w3-text-gray"
-            style="text-align: left; font-size: 15px; margin-top: -10px;opacity: 0; transform: translateY(-100%); animation: slideIn 0.5s forwards;">
+            style="text-align: left; font-size: 15px; margin-top: -10px; opacity: 0; transform: translateY(-100%); animation: slideIn 0.5s forwards; z-index: 2;">
             <!-- Descrição da Página -->
             Aqui, você pode criar novas postagens ou editar, ocultar, reexibir e excluir as postagens existentes.
           </p>
@@ -69,87 +69,128 @@
 
     <br>
 
-    <div id="newPostForm"
-      style="background-color: #1e1f22; border-radius: 10px; margin: 20px; padding: 20px; animation: popIn 0.5s; width: 50%; margin-left: 25%;">
-      <div style="display: inline-block; vertical-align: middle; margin-left: 10px;">
+    <div style="width: 80%; margin: 0 auto; display: flex; justify-content: space-between; margin-top: -30px;">
+      <div id="newPostForm"
+        style="display: inline-block; background-color: #1e1f22; border-radius: 10px; margin: 20px; padding: 20px; animation: popIn 0.5s; width: 50%;">
+        <div style="display: inline-block; vertical-align: middle; margin-left: 10px;">
 
-        <h4 class="w3-text-white" style="text-align: left; font-size: 17px;">
-          <input type="text" id="postTitle" name="postTitle"
-            style="color: #fff; background-color: #1e1f22; border: 0px; width: 100%;" required
-            placeholder="Clique para colocar o título.">
-        </h4>
-        <p id="postTimestamp" class="w3-text-gray" style="text-align: left; font-size: 15px; margin-top: -10px;">
-          Enviada em 32 de fevereiro de 2015 às 25:92.
+          <h4 class="w3-text-white" style="text-align: left; font-size: 17px;">
+            <input type="text" id="postTitle" name="postTitle" style="color: #fff; background-color: #1e1f22; border: 0px; width: 100%; text-shadow: 1px 1px 2px #4070DC;
+            cursor: text; box-sizing: border-box;" required placeholder="Titulo da nova postagem!">
+          </h4>
+          <p id="postTimestamp" class="w3-text-gray" style="text-align: left; font-size: 15px; margin-top: -10px;">
+            Clique para preencher as informações da nova postagem!
+          </p>
+
+        </div>
+        <div style="float: right; vertical-align: top; color: #fff; font-size: 20px;">
+          <i class="fas fa-edit"></i>
+        </div>
+
+        <br>
+
+        <div class="w3-text-gray">
+          <textarea id="postContent" name="postContent" class="w3-text-gray"
+            style="width: 100%; background-color: #1e1f22; border-color: #2b2b2b; padding: 10px; border-radius: 10px;"
+            placeholder="Clique para colocar o conteúdo da postagem." required></textarea>
+          <br>
+          <button class="text-editor-btn" onclick="applyTextFormat('bold')">Negrito</button>
+          <button class="text-editor-btn" onclick="applyTextFormat('italic')">Itálico</button>
+          <button class="text-editor-btn" onclick="applyTextFormat('strikethrough')">Cortado</button>
+          <button class="text-editor-btn" onclick="applyTextFormat('mark')">Marcado</button>
+
+          <!-- Adicionando um dropdown para a cor do texto -->
+          <div class="dropdown" style="display: inline-block; ">
+            <button class="text-editor-btn"
+              style="background-color: #2b2d31; background-size: cover; color: white; padding: 5px; border: none; cursor: pointer;">Colorido</button>
+            <div class="dropdown-content">
+              <select id="color-dropdown"
+                style="width: 100%; border-radius: 5px; background-color: #1e1f22; color: #fff;">
+                <option value="#ffcccc">Vermelho</option>
+                <option value="#ffff00">Amarelo</option>
+                <option value="#00ff00">Verde</option>
+                <option value="#00ffff">Azul</option>
+                <option value="#ffffff">Branco</option>
+              </select>
+              <br>
+              <button onclick="applyTextFormat('color-dropdown')"
+                style="margin-top: 5px; width: 100%; border-radius: 5px;">Aplicar</button>
+            </div>
+          </div>
+
+          <!-- Adicionando um dropdown para o gradiente do texto -->
+          <div class="dropdown" style="display: inline-block;">
+            <button class="text-editor-btn"
+              style="background-color: #2b2d31; background-size: cover; color: white; padding: 5px; border: none; cursor: pointer;">Gradiente</button>
+            <div class="dropdown-content">
+              <select id="gradient-dropdown"
+                style="width: 100%; border-radius: 5px; background-color: #1e1f22; color: #fff;">
+                <option value="linear-gradient(to right, #ffcccc, #ff6666)">Vermelho</option>
+                <option value="linear-gradient(to right, #ffff00, #00ff00)">Amarelo</option>
+                <option value="linear-gradient(to right, #00ff00, #00ffff)">Verde</option>
+                <option value="linear-gradient(to right, #00ffff, #0000ff)">Azul</option>
+              </select>
+              <br>
+              <button onclick="applyTextFormat('gradient-dropdown')"
+                style="margin-top: 5px; width: 100%; border-radius: 5px;">Aplicar</button>
+            </div>
+          </div>
+
+          <div id="custom-InsertImageDiv"
+            style="cursor: pointer; margin: 0 5px; padding: 5px; border: none; border-radius: 3px; font-size: 14px; background-color: #2b2d31; color: #fff; margin-top: 10px; display: inline-block; cursor: pointer;">
+            <label for="attachment" style="cursor: pointer;" id="custom-InsertImageButton">Inserir imagens</label>
+            <input type="file" style="cursor: pointer;" id="attachment" name="attachment" accept="image/*" multiple
+              onchange="handleFileChange(event)">
+          </div>
+          <br>
+        </div>
+        <p class="w3-text-gray" style="text-align: center;">Selecione o texto e clique nos botões para aplicar efeitos!
         </p>
-
+        <select id="categoryPost" name="category" style="cursor: pointer; margin: 0 5px; padding: 5px; border: none; border-radius: 3px; font-size: 14px;
+          background-color: #2b2d31; color: #fff; margin-top: 10px;">
+          <option value="" disabled selected>Selecione uma categoria</option>
+          <!-- Opção padrão desativada e selecionada -->
+        </select>
+        <button onclick="addNewPost()"
+          style="margin: 10px; border-radius: 10px; background-color: transparent; color: #4070DC; border: 0px; cursor: pointer;"><b>Enviar
+            postagem!</b></button>
       </div>
 
-      <br>
+      <div id="newCategory"
+        style="display: inline-block; background-color: #1e1f22; border-radius: 10px; margin: 20px; padding: 20px; animation: popIn 0.5s; width: 50%;  align-self: flex-start;">
+        <div style="display: inline-block; vertical-align: middle; margin-left: 10px;">
 
-      <div class="w3-text-gray" style="margin: 20px;">
-        <textarea id="postContent" name="postContent" class="w3-text-gray"
-          style="width: 100%; background-color: #1e1f22; border-color: #2b2b2b; padding: 10px; border-radius: 10px;"
-          placeholder="Clique para colocar o conteúdo da postagem." required></textarea>
-        <br>
-        <button class="text-editor-btn" onclick="applyTextFormat('bold')">Negrito</button>
-        <button class="text-editor-btn" onclick="applyTextFormat('italic')">Itálico</button>
-        <button class="text-editor-btn" onclick="applyTextFormat('strikethrough')">Cortado</button>
-        <button class="text-editor-btn" onclick="applyTextFormat('mark')">Marcado</button>
+          <h4 class="w3-text-white" style="text-align: left; font-size: 17px;">
+            <input type="text" id="categoryName" name="categoryName"
+              style="color: #fff; background-color: #1e1f22; border: 0px; width: 100%; cursor: text; animation: typing 3s infinite;"
+              required placeholder="Nome da nova categoria!">
+          </h4>
+          <p id="postTimestamp" class="w3-text-gray" style="text-align: left; font-size: 15px; margin-top: -10px;">
+            Clique para preencher as informações da nova categoria!
+          </p>
 
-        <!-- Adicionando um dropdown para a cor do texto -->
-        <div class="dropdown" style="display: inline-block; ">
-          <button class="text-editor-btn"
-            style="background-color: #2b2d31; background-size: cover; color: white; padding: 5px; border: none; cursor: pointer;">Colorido</button>
-          <div class="dropdown-content">
-            <select id="color-dropdown"
-              style="width: 100%; border-radius: 5px; background-color: #1e1f22; color: #fff;">
-              <option value="#ffcccc">Vermelho</option>
-              <option value="#ffff00">Amarelo</option>
-              <option value="#00ff00">Verde</option>
-              <option value="#00ffff">Azul</option>
-              <option value="#ffffff">Branco</option>
-            </select>
-            <br>
-            <button onclick="applyTextFormat('color-dropdown')"
-              style="margin-top: 5px; width: 100%; border-radius: 5px;">Aplicar</button>
-          </div>
         </div>
-
-        <!-- Adicionando um dropdown para o gradiente do texto -->
-        <div class="dropdown" style="display: inline-block;">
-          <button class="text-editor-btn"
-            style="background-color: #2b2d31; background-size: cover; color: white; padding: 5px; border: none; cursor: pointer;">Gradiente</button>
-          <div class="dropdown-content">
-            <select id="gradient-dropdown"
-              style="width: 100%; border-radius: 5px; background-color: #1e1f22; color: #fff;">
-              <option value="linear-gradient(to right, #ffcccc, #ff6666)">Vermelho</option>
-              <option value="linear-gradient(to right, #ffff00, #00ff00)">Amarelo</option>
-              <option value="linear-gradient(to right, #00ff00, #00ffff)">Verde</option>
-              <option value="linear-gradient(to right, #00ffff, #0000ff)">Azul</option>
-            </select>
-            <br>
-            <button onclick="applyTextFormat('gradient-dropdown')"
-              style="margin-top: 5px; width: 100%; border-radius: 5px;">Aplicar</button>
-          </div>
-        </div>
-
-        <div id="custom-InsertImageDiv"
-          style="cursor: pointer; margin: 0 5px; padding: 5px; border: none; border-radius: 3px; font-size: 14px; background-color: #2b2d31; color: #fff; margin-top: 10px; display: inline-block; cursor: pointer;">
-          <label for="attachment" style="cursor: pointer;" id="custom-InsertImageButton">Inserir imagens</label>
-          <input type="file" style="cursor: pointer;" id="attachment" name="attachment" accept="image/*" multiple
-            onchange="handleFileChange(event)">
+        <div style="float: right; vertical-align: top; color: #fff; font-size: 20px;">
+          <i class="fas fa-edit"></i>
         </div>
 
         <br>
 
+        <div class="w3-text-gray">
+          <div id="custom-InsertCategoryIconDiv"
+            style="cursor: pointer; margin: 0 5px; padding: 5px; border: none; border-radius: 3px; font-size: 14px; background-color: #2b2d31; color: #fff; margin-top: 10px; display: inline-block; cursor: pointer;">
+            <label for="categoryIconAttachment" style="cursor: pointer;" id="custom-InsertCategoryIconButton">Inserir
+              icone da
+              categoria</label>
+            <input type="file" style="cursor: pointer;" id="categoryIconAttachment" name="categoryIcon" accept="image/*"
+              onchange="handleFileChangeCategoryIcon(event)">
+          </div>
+          <button onclick="createCategory()"
+            style="display: inline-block; margin: 10px; border-radius: 10px; background-color: transparent; color: #4070DC; border: 0px; cursor: pointer;"><b>Criar
+              categoria!</b></button>
+        </div>
       </div>
-
-      <p class="w3-text-gray" style="margin-left: 30px;">Selecione o texto e clique nos botões para aplicar efeitos!</p>
       <br>
-
-      <button onclick="addNewPost()"
-        style="margin: 10px; border-radius: 10px; background-color: transparent; color: #4070DC; border: 0px; cursor: pointer;"><b>Adicionar
-          postagem!</b></button>
     </div>
 
     <br>

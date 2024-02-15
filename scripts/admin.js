@@ -15,10 +15,61 @@ function searchPosts() {
         .catch(error => console.error('Erro ao obter dados:', error));
 }
 
+async function createCategory() {
+    var name = document.getElementById("categoryName").value;
+
+    const formData = new FormData();
+    formData.append('categoryId', Date.now())
+    formData.append('name', name);
+
+    const files = document.getElementById('categoryIconAttachment').files;
+    for (let i = 0; i < files.length; i++) {
+        formData.append('attachments', files[i]);
+    }
+
+    if (!files || files.length == 0) {
+        document.getElementById('warn_text').textContent = `É necessário enviar um icone para categoria!`;
+        document.getElementById('warn_bar').style.margin = "15px";
+        document.getElementById('warn_bar').style.padding = "15px";
+
+        setTimeout(() => {
+            document.getElementById('warn_text').textContent = '';
+            document.getElementById('warn_bar').style.margin = "0px";
+            document.getElementById('warn_bar').style.padding = "0px";
+        }, 5000)
+
+        return;
+    }
+
+    fetch('/category', {
+        method: 'POST',
+        body: formData,
+    })
+        .then(response => response.json())
+        .then(async (data) => {
+            console.log('Success:', data);
+            clearForm();
+
+            document.getElementById('sucess_text').textContent = `✅ A categoria foi criada com sucesso!`;
+            document.getElementById('sucess_bar').style.margin = "15px";
+            document.getElementById('sucess_bar').style.padding = "15px";
+
+            setTimeout(() => {
+                document.getElementById('sucess_text').textContent = '';
+                document.getElementById('sucess_bar').style.margin = "0px";
+                document.getElementById('sucess_bar').style.padding = "0px";
+            }, 5000)
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+}
+
 async function addNewPost() {
     // Obtenha os valores do título, conteúdo e timestamp do seu formulário
     var title = document.getElementById("postTitle").value;
     var content = document.getElementById("postContent").value;
+    var category = document.getElementById("categoryPost").value;
 
     const currentDate = new Date();
     const formattedDate = `${currentDate.getDate()} de ${getMonthName(currentDate.getMonth())} de
@@ -30,6 +81,7 @@ ${currentDate.getFullYear()} às ${formatTime(currentDate.getHours())}:${formatT
     formData.append('title', title);
     formData.append('description', content);
     formData.append('date', formattedDate);
+    formData.append('category', category);
 
     const files = document.getElementById('attachment').files;
     for (let i = 0; i < files.length; i++) {
@@ -74,6 +126,24 @@ function handleFileChange(event) {
         customDiv.style.backgroundColor = "#2d63bf";
     } else {
         customButton.textContent = 'Inserir imagens';
+        customDiv.style.backgroundColor = "#2b2d31";
+    }
+
+    // Lógica para lidar com a mudança de arquivo aqui
+    console.log("Arquivos selecionados:", files);
+}
+
+function handleFileChangeCategoryIcon(event) {
+    const customButton = document.getElementById("custom-InsertCategoryIconButton");
+    const customDiv = document.getElementById("custom-InsertCategoryIconDiv");
+    const files = event.target.files;
+
+    if (files.length > 0) {
+        customButton.textContent = `Imagem anexada com sucesso.`;
+        customDiv.style.backgroundColor = "#2d63bf";
+    } else {
+        customButton.textContent = 'Inserir icone da categoria';
+        customDiv.style.backgroundColor = "#2b2d31";
     }
 
     // Lógica para lidar com a mudança de arquivo aqui
@@ -102,6 +172,9 @@ function clearForm() {
     document.getElementById("postTitle").value = "";
     document.getElementById("postContent").value = "";
     document.getElementById("attachment").value = "";
+    document.getElementById("categoryIconAttachment").value = "";
+    document.getElementById("categoryName").value = "";
+    document.getElementById("categoryPost").value = "";
 }
 
 function carregarPostagens() {
@@ -112,9 +185,20 @@ function carregarPostagens() {
         .catch(error => console.error('Erro ao obter dados:', error));
 }
 
-function criarPostagens(postagens, searchTerm) {
+function criarPostagens(postagens, searchTerm, ordem) {
     const container = document.getElementById('pathnotes');
     container.innerHTML = "";
+
+    postagens.sort((a, b) => {
+        const postIdA = parseFloat(a.postId);
+        const postIdB = parseFloat(b.postId);
+
+        if (ordem === 'decrescente') {
+            return postIdA - postIdB;
+        } else if (ordem === 'crescente') {
+            return postIdB - postIdA;
+        }
+    });
 
     postagens.forEach(postagem => {
         const postagemDiv = document.createElement('div');
@@ -145,8 +229,67 @@ function criarPostagens(postagens, searchTerm) {
         dataP.style.marginTop = '-10px';
         dataP.textContent = `${postagem.date}.`;
 
+        const categoriasDiv = document.createElement('div');
+        categoriasDiv.className = 'w3-text-gray';
+        categoriasDiv.style.marginTop = '-10px';
+
+        if (postagem.categories && postagem.categories.length > 0) {
+            postagem.categories.forEach(categoryName => {
+                const categoriaDiv = document.createElement('div');
+                categoriaDiv.style.backgroundColor = "#4070DC"
+                categoriaDiv.style.padding = '5px';           
+                categoriaDiv.style.paddingLeft = '15px';
+                categoriaDiv.style.paddingRight = '30px';
+                categoriaDiv.style.borderRadius = '15px';
+                categoriaDiv.style.color = "#fff";
+                categoriaDiv.style.width = "fit-content";
+                categoriaDiv.style.fontSize = "12px";
+                categoriaDiv.style.textAlign = 'center';
+                categoriaDiv.style.position = 'relative'; // Permitir posicionar o 'X'
+
+                const categoriaP = document.createElement('p');
+                categoriaP.style.margin = '0'; // Remover a margem padrão do parágrafo
+                categoriaP.textContent = `${categoryName}`;
+
+                const removeButton = document.createElement('button');
+                removeButton.innerHTML = 'X';
+                removeButton.style.backgroundColor = "#023e8a";
+                removeButton.style.color = "#fff";
+                removeButton.style.border = 'none';
+                removeButton.style.borderRadius = '50%';
+                removeButton.style.marginLeft = '5px';
+                removeButton.style.cursor = 'pointer';
+                removeButton.style.position = 'absolute'; // Posicionar o 'X' absolutamente
+                removeButton.style.right = '5px'; // Alinhar à direita
+                removeButton.style.top = '50%'; // Alinhar verticalmente ao meio
+                removeButton.style.transform = 'translateY(-50%)'; // Ajustar verticalmente ao meio
+
+                // Adiciona evento de clique à div para remover a categoria
+                categoriaDiv.addEventListener('click', () => removerCategoria(postagem.postId, categoryName));
+
+                // Adiciona evento de hover ao botão
+                removeButton.addEventListener('mouseover', () => {
+                    removeButton.style.backgroundColor = "#023047";
+                    removeButton.style.transition = 'background-color 0.3s ease';
+                });
+
+                // Remove animação de hover ao botão
+                removeButton.addEventListener('mouseout', () => {
+                    removeButton.style.backgroundColor = "#023e8a";
+                    removeButton.style.transition = 'background-color 0.3s ease';
+                });
+
+                categoriaDiv.appendChild(categoriaP);
+                categoriaDiv.appendChild(removeButton);
+
+                categoriasDiv.appendChild(categoriaDiv);
+            });
+        }
+
+
         conteudoDiv.appendChild(tituloH4);
         conteudoDiv.appendChild(dataP);
+        conteudoDiv.appendChild(categoriasDiv);
 
         const imagensDiv = document.createElement('div');
         imagensDiv.style.display = 'flex';
@@ -231,7 +374,7 @@ function criarPostagens(postagens, searchTerm) {
             botoesDiv.appendChild(reexibirBotao);
         }
 
-        
+
         const postIdCopy = criarBotaoAcao(`#${postagem.postId}`, () => copyText(postagem.postId), '#6c757d');
         botoesDiv.appendChild(postIdCopy);
 
@@ -484,6 +627,24 @@ function applyTextFormat(format, value = null) {
     const newText = postContent.value.substring(0, start) + formattedText + postContent.value.substring(end);
     postContent.value = newText;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const categorySelect = document.getElementById('categoryPost');
+
+    // Fazer a solicitação para o endpoint '/category'
+    fetch('/category')
+        .then(response => response.json())
+        .then(categories => {
+            // Adicionar cada categoria como uma opção no select
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.name; // Use a propriedade 'name' como valor
+                option.textContent = category.name; // Use a propriedade 'name' como texto visível
+                categorySelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Erro ao obter categorias:', error));
+});
 
 function getClosestNote() {
     const viewportHeight = window.innerHeight;
