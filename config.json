@@ -1,12 +1,12 @@
 {
     "mongoose": {
-        "user": "juniordxwt",
-        "password": "CkEUXMarKKAyKY5K"
+        "user": "",
+        "password": ""
     },
     "admin": {
         "secret": {
-            "login": "@admin",
-            "password": "123"
+            "login": "",
+            "password": ""
         }
     }
 }
