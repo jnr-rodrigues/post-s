@@ -399,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     fetch('/check/admin')
         .then(response => {
-            if (response.ok) { // Verifica se a resposta está no intervalo 200-299 (OK)
+            if (response.ok) {
                 button.removeAttribute('onclick');
                 button.setAttribute('href', '/admin');
             } else {

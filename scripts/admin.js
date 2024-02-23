@@ -62,7 +62,6 @@ async function createCategory() {
 }
 
 async function addNewPost() {
-    // Obtenha os valores do título, conteúdo e timestamp do seu formulário
     var title = document.getElementById("postTitle").value;
     var content = document.getElementById("postContent").value;
     var category = document.getElementById("categoryPost").value;
@@ -71,7 +70,6 @@ async function addNewPost() {
     const formattedDate = `${currentDate.getDate()} de ${getMonthName(currentDate.getMonth())} de
 ${currentDate.getFullYear()} às ${formatTime(currentDate.getHours())}:${formatTime(currentDate.getMinutes())}`;
 
-    // Crie um FormData para enviar o formulário, incluindo os arquivos
     const formData = new FormData();
     formData.append('postId', Date.now())
     formData.append('title', title);
@@ -84,7 +82,6 @@ ${currentDate.getFullYear()} às ${formatTime(currentDate.getHours())}:${formatT
         formData.append('attachments', files[i]);
     }
 
-    // Faça a requisição POST para o servidor
     fetch('/post', {
         method: 'POST',
         body: formData,
@@ -125,7 +122,6 @@ function handleFileChange(event) {
         customDiv.style.backgroundColor = "#2b2d31";
     }
 
-    // Lógica para lidar com a mudança de arquivo aqui
     console.log("Arquivos selecionados:", files);
 }
 
@@ -142,7 +138,6 @@ function handleFileChangeCategoryIcon(event) {
         customDiv.style.backgroundColor = "#2b2d31";
     }
 
-    // Lógica para lidar com a mudança de arquivo aqui
     console.log("Arquivos selecionados:", files);
 }
 
@@ -299,7 +294,6 @@ function criarPostagens(postagens, searchTerm, ordem) {
         descricaoDiv.style.margin = '20px';
         descricaoDiv.innerHTML = `<div contenteditable="true" oninput="atualizarDescricao('${postagem.postId}', this)">${postagem.description}</div>`;
 
-        // Adicionando botões de ícones
         const botoesDiv = document.createElement('div');
         botoesDiv.style.marginTop = '10px';
 
@@ -436,7 +430,6 @@ async function atualizarTitulo(postId, elemento) {
         document.getElementById('sucess_bar').style.margin = "0px";
         document.getElementById('sucess_bar').style.padding = "0px";
     }, 5000)
-    // Adicione a lógica de salvamento aqui, se necessário
 }
 
 function atualizarDescricao(postId, elemento) {
@@ -451,7 +444,6 @@ function atualizarDescricao(postId, elemento) {
         document.getElementById('sucess_bar').style.margin = "0px";
         document.getElementById('sucess_bar').style.padding = "0px";
     }, 5000)
-    // Adicione a lógica de salvamento aqui, se necessário
 }
 
 function salvarEdicao(postId, tituloElemento, descricaoElemento) {
@@ -645,11 +637,8 @@ function getClosestNote() {
         const rect = note.getBoundingClientRect();
         const noteTop = rect.top + scrollTop;
         const noteBottom = rect.bottom + scrollTop;
-
-        // Calcula a distância entre o centro da tela e a postagem
         const distance = Math.abs(centerY - (noteTop + noteBottom) / 2);
 
-        // Atualiza a postagem mais próxima se a distância for menor
         if (distance < closestDistance) {
             closestNote = note;
             closestDistance = distance;
@@ -777,21 +766,17 @@ setClosestNoteInFocus();
 
 async function selectCategory(postId) {
     try {
-        // Obter informações da postagem
         const posts = await fetch('/post');
         const postagens = await posts.json();
         const postagem = postagens.find(post => post.postId === postId);
 
-        // Obter todas as categorias
         const cats = await fetch('/category');
         const categorias = await cats.json();
 
-        // Criar o conteúdo do modal
         const modalContent = document.createElement('div');
         modalContent.style.textAlign = "left";
         modalContent.innerHTML = '<p class="w3-text-white" style="font-size: 24px; margin-top: -10px;"><b style="color: #4070DC;">Categorias!</b></p><br><p class="w3-text-white" style="font-size: 16px; margin-top: -50px;">Você pode marcar/desmarcar as categorias que quer adicionar/remover da postagem.</p > ';
 
-        // Adicionar checkboxes para cada categoria
         categorias.forEach(categoria => {
             const checkbox = document.createElement('input');
             checkbox.type = 'checkbox';
@@ -804,7 +789,6 @@ async function selectCategory(postId) {
             label.style.marginLeft = "5px";
             label.style.color = "#fff";
 
-            // Verificar se a postagem já possui a categoria e marcar a checkbox
             if (postagem.categories.includes(categoria.categoryId)) {
                 checkbox.checked = true;
             }
@@ -814,9 +798,7 @@ async function selectCategory(postId) {
             modalContent.appendChild(document.createElement('br'));
         });
 
-        // Adicionar botão para salvar as categorias selecionadas
         const salvarButton = document.createElement('button');
-        //background-color: #4070DC; color: #fff; padding: 10px; border-radius: 10px; border: 0px; cursor: pointer;
         salvarButton.style.backgroundColor = "#4070DC";
         salvarButton.style.color = "#fff";
         salvarButton.style.padding = "10px";
@@ -828,24 +810,19 @@ async function selectCategory(postId) {
         salvarButton.addEventListener('click', () => salvarCategorias(postId));
         modalContent.appendChild(salvarButton);
 
-        // Abrir o modal
         abrirModal(modalContent);
     } catch (error) {
         console.error('Erro ao abrir modal de seleção de categoria:', error);
-        // Tratar o erro conforme necessário
     }
 }
 
-// Função para salvar as categorias selecionadas
 async function salvarCategorias(postId) {
     try {
-        // Obter as checkboxes selecionadas
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
         const categoriasSelecionadas = Array.from(checkboxes)
             .filter(checkbox => checkbox.checked)
             .map(checkbox => checkbox.value);
 
-        // Enviar as categorias selecionadas para o servidor
         const response = await fetch(`/updateCategory/${postId}`, {
             method: 'POST',
             headers: {
@@ -860,15 +837,12 @@ async function salvarCategorias(postId) {
             console.error('Erro ao atualizar categorias:', response.statusText);
         }
 
-        // Fechar o modal após salvar
         fecharModal();
     } catch (error) {
         console.error('Erro ao salvar categorias:', error);
-        // Tratar o erro conforme necessário
     }
 }
 
-// Função para abrir o modal
 function abrirModal(content) {
     const modal = document.getElementById('modal');
     const modalContent = document.getElementById('modal-content');
@@ -878,7 +852,6 @@ function abrirModal(content) {
     modal.style.display = 'flex';
 }
 
-// Função para fechar o modal
 function fecharModal() {
     const modal = document.getElementById('modal');
     modal.style.display = 'none';

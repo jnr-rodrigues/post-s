@@ -26,7 +26,7 @@ app.post('/login', (req, res) => {
     const { username, password } = req.body;
 
     if (username === config.admin.secret.login && password === config.admin.secret.password) {
-        req.session.loggedInUser = { username, ip: req.ip }; // Armazena o nome de usuário e o IP na sessão
+        req.session.loggedInUser = { username, ip: req.ip };
         return res.redirect('/admin');
     } else {
         return res.status(401).json({ error: 'INVALID_CREDENTIALS' });
@@ -42,7 +42,6 @@ const requireLogin = (req, res, next) => {
 };
 
 app.get('/logout', (req, res) => {
-    // Destruir a sessão para fazer logout
     req.session.destroy((err) => {
         if (err) {
             console.error('Erro ao destruir a sessão:', err);
@@ -52,12 +51,10 @@ app.get('/logout', (req, res) => {
     });
 });
 
-// Modify the existing server-side code or add this to your Express app
 app.post('/postagens/:categoryId', async (req, res) => {
     try {
         const categoryId = req.params.categoryId;
 
-        // Retrieve posts based on categoryId (modify this logic based on your database structure)
         const posts = await PostModel.find({ categoryId: categoryId });
 
         res.json({ message: 'Filtered Posts', posts: posts });
@@ -73,7 +70,6 @@ app.get('/postagens/:categoryId', async (req, res) => {
 
 
 app.get('/check/admin', (req, res) => {
-    // Verificar se o usuário está logado e se é um admin
     if (req.session.loggedInUser && req.session.loggedInUser.username === config.admin.secret.login) {
         res.sendStatus(200);
     } else {
@@ -309,17 +305,14 @@ app.delete('/delete/category/:categoryId', async (req, res) => {
 app.get('/selectCategory/:postId', async (req, res) => {
     const { postId } = req.params;
     await selectCategory(postId);
-    // Você pode enviar uma resposta de sucesso ou redirecionar para outra página se necessário
     res.status(200).send('Modal aberto com sucesso');
 });
 
-// Rota para adicionar/remover postagem da categoria
 app.post('/updateCategory/:postId', async (req, res) => {
     const { postId } = req.params;
     const { categoryIds } = req.body;
 
     try {
-        // Atualizar as categorias da postagem
         await postModel.updateOne({ postId }, { categories: categoryIds });
         res.status(200).json({ message: 'Categorias atualizadas com sucesso.' });
     } catch (error) {
