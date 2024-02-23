@@ -1238,10 +1238,11 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
   justify-content: center;
   align-items: center;
+  z-index: 9999;
 }
 
 .popupLogin-content {
-  background-color: #fff;
+  background-color: #1E1F22;
   padding: 20px;
   border-radius: 10px;
   text-align: center;
@@ -1297,7 +1298,11 @@ body {
   color: white;
 }
 
-#categoryName::placeholder {
+#inputCategoryUrl::placeholder {
+  color: white;
+}
+
+#inputCategoryName::placeholder {
   color: white;
 }
 
@@ -1313,4 +1318,54 @@ body {
   75% {
     scale: 1;
   }
+}
+
+.categories-carousel {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+
+.categoria {
+  flex: 0 0 auto;
+  width: 200px;
+  /* Largura de cada categoria */
+  margin-right: 10px;
+  /* Espaçamento entre categorias */
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.5s ease-out;
+}
+
+.categoria:focus {
+  transform: scale(1.2);
+  /* A categoria mais ao centro terá um zoom maior */
+}
+
+#categoriesWrapper {
+  width: 100%;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+.categoria {
+  width: 300px;
+  /* Ajuste conforme necessário */
+  height: 300px;
+  /* Quadrado grande para o texto */
+  display: inline-block;
+  margin-right: 20px;
+  background-color: #f0f0f0;
+  /* Cor de fundo, ajuste conforme necessário */
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.categoria:hover {
+  background-color: #e0e0e0;
+  /* Cor de fundo ao passar o mouse, ajuste conforme necessário */
 }

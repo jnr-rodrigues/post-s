@@ -63,7 +63,8 @@
         <div class="transition-screen" id="transition-screen">
             <div class="transition-screen-content">
                 <!-- Ícone de Transição -->
-                <i class="fas fa-torii-gate w3-text-white" style="animation: popIn 1s infinite; margin-top: -30px"></i>
+                <img id="iconGuild" src="/appIconLoad.png" style="width: 150px; border-radius: 10px; display: inline-block"
+                    alt="icon" />
             </div>
         </div>
 
@@ -100,10 +101,15 @@
                 style="background-color: #1E1F22; color: #fff; margin: 10px; padding: 10px; border-radius: 10px; border: 0px; flex: 1;"
                 placeholder="Buscar postagens..." oninput="searchPosts()" />
             <select id="dropdownOrdem"
-                style="padding: 10px; border: 0px; border-radius: 10px; background-color: #1e1f22; color: #fff;"
+                style="padding: 10px; border: 0px; border-radius: 10px; background-color: #1e1f22; color: #fff; margin-right: 10px;"
                 onchange="searchPosts()">
                 <option value="crescente">Mais recente!</option>
                 <option value="decrescente">Mais antigo!</option>
+            </select>
+            <select id="categoryPost"
+                style="padding: 10px; border: 0px; border-radius: 10px; background-color: #1e1f22; color: #fff;"
+                onchange="searchPosts()">
+                <option value="all">Mostrar todas!</option>
             </select>
         </div>
 

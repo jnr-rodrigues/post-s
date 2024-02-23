@@ -28,13 +28,6 @@ async function downloadPage() {
         }
     });
 
-    // Mantém o elemento com o ID 'searchInput' fixo no topo
-    /*const searchInputElement = document.getElementById('searchDiv');
-    if (searchInputElement) {
-        const searchInputStyle = 'position: fixed; top: 0; left: 0; right: 0; background-color: #1E1F22; z-index: 999; margin: 10px; padding: 10px; border-radius: 10px; border: 0;';
-        htmlContent = htmlContent.replace(searchInputElement.outerHTML, searchInputElement.outerHTML.replace('style="', `style="${searchInputStyle}`));
-    }*/
-
     const blob = new Blob([htmlContent], { type: 'text/html' });
 
     const link = document.createElement('a');
@@ -43,7 +36,7 @@ async function downloadPage() {
     const currentDate = new Date();
     const formattedDate = `${currentDate.getDate()}.0${currentDate.getMonth()} (até ${formatTime(currentDate.getHours())}h)`;
 
-    link.download = `Posts - ${formattedDate}.html`;
+    link.download = `${formattedDate}.html`;
     document.body.appendChild(link);
 
     document.getElementById('sucess_text').textContent = 'Iniciando o download das postagens em alguns segundos...';
@@ -109,7 +102,7 @@ function carregarPostagens() {
         .catch(error => console.error('Erro ao obter dados:', error));
 }
 
-function criarPostagens(postagens, searchTerm, ordem) {
+function criarPostagens(postagens, searchTerm, ordem, categoryFilter) {
     const container = document.getElementById('pathnotes');
     container.innerHTML = '';
 
@@ -158,10 +151,12 @@ function criarPostagens(postagens, searchTerm, ordem) {
         categoriasDiv.style.marginTop = '-10px';
 
         if (postagem.categories && postagem.categories.length > 0) {
-            postagem.categories.forEach(categoryName => {
+            postagem.categories.forEach(async (category) => {
                 const categoriaP = document.createElement('p');
                 categoriaP.style.backgroundColor = "#4070DC"
+                categoriaP.style.display = "inline-block";
                 categoriaP.style.padding = '5px';
+                categoriaP.style.marginLeft = "10px";
                 categoriaP.style.paddingLeft = '15px';
                 categoriaP.style.paddingRight = '15px';
                 categoriaP.style.borderRadius = '15px';
@@ -169,8 +164,14 @@ function criarPostagens(postagens, searchTerm, ordem) {
                 categoriaP.style.width = "fit-content";
                 categoriaP.style.fontSize = "12px";
                 categoriaP.style.textAlign = 'center';
-                categoriaP.textContent = `${categoryName}`;
-                categoriasDiv.appendChild(categoriaP);
+
+                const response = await fetch(`/category/${category}`)
+                const categoria = await response.json();
+
+                if (categoria) {
+                    categoriaP.textContent = `${categoria.categoryName}`;
+                    categoriasDiv.appendChild(categoriaP);
+                }
             });
         }
 
@@ -224,12 +225,11 @@ function criarPostagens(postagens, searchTerm, ordem) {
             });
         }
 
-        if (postagem.visible == "true") {
+        if (postagem.visible == "true" && (categoryFilter === "all" || postagem.categories.some(cat => cat.toLowerCase() === categoryFilter.toLowerCase()))) {
             if (searchTerm && (
                 postagem.title.toLowerCase().includes(searchTerm) ||
                 postagem.description.toLowerCase().includes(searchTerm) ||
-                postagem.postId.toLowerCase().includes(searchTerm) ||
-                (postagem.categories && postagem.categories.some(category => category.toLowerCase().includes(searchTerm)))
+                postagem.postId.toLowerCase().includes(searchTerm)
             )) {
                 container.appendChild(postagemDiv);
             } else if (!searchTerm) {
@@ -240,7 +240,6 @@ function criarPostagens(postagens, searchTerm, ordem) {
         setClosestNoteInFocus();
     });
 }
-
 
 async function copyText(text) {
     const inputElement = document.createElement('input');
@@ -265,10 +264,12 @@ async function copyText(text) {
 function searchPosts() {
     const dropdownValue = document.getElementById('dropdownOrdem').value.toLowerCase();
     const searchValue = document.getElementById('searchInput').value.toLowerCase();
+    const categoryValue = document.getElementById('categoryPost').value.toLowerCase();
+
     fetch('/post')
         .then(response => response.json())
         .then(data => {
-            criarPostagens(data, searchValue, dropdownValue)
+            criarPostagens(data, searchValue, dropdownValue, categoryValue)
         })
         .catch(error => console.error('Erro ao obter dados:', error));
 }
@@ -300,7 +301,10 @@ async function handleAuthorized() {
     document.getElementById('username').value = "";
     document.getElementById('password').value = "";
 
-    document.getElementById('sucess_text').textContent = 'Bem-vindo(a) de volta! Em alguns segundos você estará no painel admin...';
+    const loginPopup = document.getElementById('popupLogin');
+    loginPopup.style.display = 'none';
+
+    document.getElementById('sucess_text').textContent = 'Bem-vindo(a) de volta! Em alguns segundos você estará no painel administrador...';
     document.getElementById('sucess_bar').style.margin = "15px";
     document.getElementById('sucess_bar').style.padding = "15px";
 
@@ -387,7 +391,7 @@ async function attemptLogin() {
 
 fetch('/post')
     .then(response => response.json())
-    .then(data => criarPostagens(data, "", "crescente"))
+    .then(data => criarPostagens(data, "", "crescente", "all"))
     .catch(error => console.error('Erro ao obter dados:', error));
 
 document.addEventListener('DOMContentLoaded', function () {
@@ -403,4 +407,48 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         })
         .catch(error => console.error('Erro ao verificar se o usuário é um admin:', error));
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    const categorySelect = document.getElementById('categoryPost');
+
+    fetch('/category')
+        .then(response => response.json())
+        .then(categories => {
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.categoryId;
+                option.textContent = category.categoryName;
+                categorySelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Erro ao obter categorias:', error));
+});
+
+document.addEventListener('DOMContentLoaded', async function () {
+    try {
+        const catId = window.location.pathname.split('/').pop();
+
+        const response = await fetch(`https://onny.discloud.app/category/${catId}`);
+        const categoria = await response.json();
+
+        if (categoria && categoria.categoryName) {
+            const categorySelect = document.getElementById("categoryPost");
+
+            for (let i = 0; i < categorySelect.options.length; i++) {
+                if (categorySelect.options[i].value === categoria.categoryId) {
+                    categorySelect.options[i].selected = true;
+                    console.log(`Categoria de filtro definida: ${categoria.categoryName}`);
+                    break;
+                }
+            }
+
+            searchPosts();
+            window.history.replaceState(null, null, "/postagens");
+        } else {
+            console.error('Categoria não encontrada ou sem nome.');
+        }
+    } catch (error) {
+        console.error('Erro ao obter a categoria:', error);
+    }
 });

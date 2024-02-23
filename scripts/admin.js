@@ -1,4 +1,3 @@
-
 const username = localStorage.getItem('username');
 if (username) {
     console.log('Username:', username);
@@ -7,7 +6,6 @@ if (username) {
 }
 
 function searchPosts() {
-    // Obtém o valor da busca
     const searchValue = document.getElementById('searchInput').value.toLowerCase();
     fetch('/post')
         .then(response => response.json())
@@ -16,19 +14,11 @@ function searchPosts() {
 }
 
 async function createCategory() {
-    var name = document.getElementById("categoryName").value;
+    var categoryName = document.getElementById("inputCategoryName").value;
+    var categoryUrl = document.getElementById("inputCategoryUrl").value;
 
-    const formData = new FormData();
-    formData.append('categoryId', Date.now())
-    formData.append('name', name);
-
-    const files = document.getElementById('categoryIconAttachment').files;
-    for (let i = 0; i < files.length; i++) {
-        formData.append('attachments', files[i]);
-    }
-
-    if (!files || files.length == 0) {
-        document.getElementById('warn_text').textContent = `É necessário enviar um icone para categoria!`;
+    if (!categoryName || categoryName.length == 0) {
+        document.getElementById('warn_text').textContent = `Não é possível criar uma categoria sem nome!`;
         document.getElementById('warn_bar').style.margin = "15px";
         document.getElementById('warn_bar').style.padding = "15px";
 
@@ -36,33 +26,39 @@ async function createCategory() {
             document.getElementById('warn_text').textContent = '';
             document.getElementById('warn_bar').style.margin = "0px";
             document.getElementById('warn_bar').style.padding = "0px";
-        }, 5000)
+        }, 5000);
 
         return;
     }
 
-    fetch('/category', {
-        method: 'POST',
-        body: formData,
-    })
-        .then(response => response.json())
-        .then(async (data) => {
-            console.log('Success:', data);
-            clearForm();
+    const formData = new FormData();
+    formData.append('categoryId', Date.now().toString());
+    formData.append('categoryName', categoryName);
+    formData.append('categoryUrl', categoryUrl);
 
-            document.getElementById('sucess_text').textContent = `✅ A categoria foi criada com sucesso!`;
-            document.getElementById('sucess_bar').style.margin = "15px";
-            document.getElementById('sucess_bar').style.padding = "15px";
-
-            setTimeout(() => {
-                document.getElementById('sucess_text').textContent = '';
-                document.getElementById('sucess_bar').style.margin = "0px";
-                document.getElementById('sucess_bar').style.padding = "0px";
-            }, 5000)
-        })
-        .catch((error) => {
-            console.error('Error:', error);
+    try {
+        const response = await fetch('/category', {
+            method: 'POST',
+            body: formData,
         });
+
+        const data = await response.json();
+
+        console.log('Success:', data);
+        clearForm();
+
+        document.getElementById('sucess_text').textContent = `A categoria foi criada com sucesso!`;
+        document.getElementById('sucess_bar').style.margin = "15px";
+        document.getElementById('sucess_bar').style.padding = "15px";
+
+        setTimeout(() => {
+            document.getElementById('sucess_text').textContent = '';
+            document.getElementById('sucess_bar').style.margin = "0px";
+            document.getElementById('sucess_bar').style.padding = "0px";
+        }, 5000);
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 async function addNewPost() {
@@ -101,7 +97,7 @@ ${currentDate.getFullYear()} às ${formatTime(currentDate.getHours())}:${formatT
             await new Promise(resolve => setTimeout(resolve, 1000));
             carregarPostagens();
 
-            document.getElementById('sucess_text').textContent = `✅ A postagem foi inserida com sucesso!`;
+            document.getElementById('sucess_text').textContent = `A postagem foi inserida com sucesso!`;
             document.getElementById('sucess_bar').style.margin = "15px";
             document.getElementById('sucess_bar').style.padding = "15px";
 
@@ -172,9 +168,9 @@ function clearForm() {
     document.getElementById("postTitle").value = "";
     document.getElementById("postContent").value = "";
     document.getElementById("attachment").value = "";
-    document.getElementById("categoryIconAttachment").value = "";
-    document.getElementById("categoryName").value = "";
     document.getElementById("categoryPost").value = "";
+
+    document.getElementById("inputCategoryName").value = "";
 }
 
 function carregarPostagens() {
@@ -234,58 +230,29 @@ function criarPostagens(postagens, searchTerm, ordem) {
         categoriasDiv.style.marginTop = '-10px';
 
         if (postagem.categories && postagem.categories.length > 0) {
-            postagem.categories.forEach(categoryName => {
-                const categoriaDiv = document.createElement('div');
-                categoriaDiv.style.backgroundColor = "#4070DC"
-                categoriaDiv.style.padding = '5px';           
-                categoriaDiv.style.paddingLeft = '15px';
-                categoriaDiv.style.paddingRight = '30px';
-                categoriaDiv.style.borderRadius = '15px';
-                categoriaDiv.style.color = "#fff";
-                categoriaDiv.style.width = "fit-content";
-                categoriaDiv.style.fontSize = "12px";
-                categoriaDiv.style.textAlign = 'center';
-                categoriaDiv.style.position = 'relative'; // Permitir posicionar o 'X'
-
+            postagem.categories.forEach(async (category) => {
                 const categoriaP = document.createElement('p');
-                categoriaP.style.margin = '0'; // Remover a margem padrão do parágrafo
-                categoriaP.textContent = `${categoryName}`;
+                categoriaP.style.backgroundColor = "#4070DC"
+                categoriaP.style.display = "inline-block";
+                categoriaP.style.padding = '5px';
+                categoriaP.style.marginLeft = "10px";
+                categoriaP.style.paddingLeft = '15px';
+                categoriaP.style.paddingRight = '15px';
+                categoriaP.style.borderRadius = '15px';
+                categoriaP.style.color = "#fff";
+                categoriaP.style.width = "fit-content";
+                categoriaP.style.fontSize = "12px";
+                categoriaP.style.textAlign = 'center';
 
-                const removeButton = document.createElement('button');
-                removeButton.innerHTML = 'X';
-                removeButton.style.backgroundColor = "#023e8a";
-                removeButton.style.color = "#fff";
-                removeButton.style.border = 'none';
-                removeButton.style.borderRadius = '50%';
-                removeButton.style.marginLeft = '5px';
-                removeButton.style.cursor = 'pointer';
-                removeButton.style.position = 'absolute'; // Posicionar o 'X' absolutamente
-                removeButton.style.right = '5px'; // Alinhar à direita
-                removeButton.style.top = '50%'; // Alinhar verticalmente ao meio
-                removeButton.style.transform = 'translateY(-50%)'; // Ajustar verticalmente ao meio
+                const response = await fetch(`/category/${category}`)
+                const categoria = await response.json();
 
-                // Adiciona evento de clique à div para remover a categoria
-                categoriaDiv.addEventListener('click', () => removerCategoria(postagem.postId, categoryName));
-
-                // Adiciona evento de hover ao botão
-                removeButton.addEventListener('mouseover', () => {
-                    removeButton.style.backgroundColor = "#023047";
-                    removeButton.style.transition = 'background-color 0.3s ease';
-                });
-
-                // Remove animação de hover ao botão
-                removeButton.addEventListener('mouseout', () => {
-                    removeButton.style.backgroundColor = "#023e8a";
-                    removeButton.style.transition = 'background-color 0.3s ease';
-                });
-
-                categoriaDiv.appendChild(categoriaP);
-                categoriaDiv.appendChild(removeButton);
-
-                categoriasDiv.appendChild(categoriaDiv);
+                if (categoria) {
+                    categoriaP.textContent = `${categoria.categoryName}`;
+                    categoriasDiv.appendChild(categoriaP);
+                }
             });
         }
-
 
         conteudoDiv.appendChild(tituloH4);
         conteudoDiv.appendChild(dataP);
@@ -374,9 +341,13 @@ function criarPostagens(postagens, searchTerm, ordem) {
             botoesDiv.appendChild(reexibirBotao);
         }
 
+        const adicionarCategoriaBotao = criarBotaoAcao('', () => selectCategory(postagem.postId), '#d3d3d3');
+        adicionarCategoriaBotao.appendChild(criarIcone('fa-list-ol'));
+        botoesDiv.appendChild(adicionarCategoriaBotao);
 
         const postIdCopy = criarBotaoAcao(`#${postagem.postId}`, () => copyText(postagem.postId), '#6c757d');
         botoesDiv.appendChild(postIdCopy);
+
 
         postagemDiv.appendChild(conteudoDiv);
         postagemDiv.appendChild(descricaoDiv);
@@ -392,6 +363,10 @@ function criarPostagens(postagens, searchTerm, ordem) {
 
         setClosestNoteInFocus();
     });
+}
+
+async function selectCategory(postId) {
+
 }
 
 async function removerAttachment(postId, attachmentPath) {
@@ -412,7 +387,7 @@ async function removerAttachment(postId, attachmentPath) {
             await new Promise(resolve => setTimeout(resolve, 1000));
             carregarPostagens();
 
-            document.getElementById('sucess_text').textContent = `🗑️ Uma imagem dessa postagem foi removida com sucesso!`;
+            document.getElementById('sucess_text').textContent = `Uma imagem dessa postagem foi removida com sucesso!`;
             document.getElementById('sucess_bar').style.margin = "15px";
             document.getElementById('sucess_bar').style.padding = "15px";
 
@@ -494,7 +469,7 @@ function salvarEdicao(postId, tituloElemento, descricaoElemento) {
         })
         .then(data => {
             console.log(`Edição salva para postagem ${postId}`);
-            document.getElementById('sucess_text').textContent = `✏️ A postagem foi editada com sucesso!`;
+            document.getElementById('sucess_text').textContent = `A postagem foi editada com sucesso!`;
             document.getElementById('sucess_bar').style.margin = "15px";
             document.getElementById('sucess_bar').style.padding = "15px";
 
@@ -518,7 +493,7 @@ async function excluirPostagem(postId) {
     await new Promise(resolve => setTimeout(resolve, 1000));
     carregarPostagens();
 
-    document.getElementById('sucess_text').textContent = `🗑️ A postagem foi excluída com sucesso!`;
+    document.getElementById('sucess_text').textContent = `A postagem foi excluída com sucesso!`;
     document.getElementById('sucess_bar').style.margin = "15px";
     document.getElementById('sucess_bar').style.padding = "15px";
 
@@ -543,7 +518,7 @@ async function ocultarPostagem(postId) {
             await new Promise(resolve => setTimeout(resolve, 1000));
             carregarPostagens();
 
-            document.getElementById('sucess_text').textContent = '🕶️ Você optou por ocultar esta postagem! É possível reexibi-la a qualquer momento.';
+            document.getElementById('sucess_text').textContent = 'Você optou por ocultar esta postagem! É possível reexibi-la a qualquer momento.';
             document.getElementById('sucess_bar').style.margin = "15px";
             document.getElementById('sucess_bar').style.padding = "15px";
 
@@ -570,7 +545,7 @@ async function reexibirPostagem(postId) {
             await new Promise(resolve => setTimeout(resolve, 1000));
             carregarPostagens();
 
-            document.getElementById('sucess_text').textContent = '👓 Você optou por reexibir esta postagem! É possível ocultá-la novamente a qualquer momento.';
+            document.getElementById('sucess_text').textContent = 'Você optou por reexibir esta postagem! É possível ocultá-la novamente a qualquer momento.';
             document.getElementById('sucess_bar').style.margin = "15px";
             document.getElementById('sucess_bar').style.padding = "15px";
 
@@ -630,17 +605,28 @@ function applyTextFormat(format, value = null) {
 
 document.addEventListener('DOMContentLoaded', () => {
     const categorySelect = document.getElementById('categoryPost');
-
-    // Fazer a solicitação para o endpoint '/category'
     fetch('/category')
         .then(response => response.json())
         .then(categories => {
-            // Adicionar cada categoria como uma opção no select
             categories.forEach(category => {
                 const option = document.createElement('option');
-                option.value = category.name; // Use a propriedade 'name' como valor
-                option.textContent = category.name; // Use a propriedade 'name' como texto visível
+                option.value = category.categoryId;
+                option.textContent = category.categoryName;
                 categorySelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Erro ao obter categorias:', error));
+
+
+    const categoryEditSelect = document.getElementById('categoryEditPost');
+    fetch('/category')
+        .then(response => response.json())
+        .then(categories => {
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.categoryId;
+                option.textContent = category.categoryName;
+                categoryEditSelect.appendChild(option);
             });
         })
         .catch(error => console.error('Erro ao obter categorias:', error));
@@ -673,15 +659,110 @@ function getClosestNote() {
     return closestNote;
 }
 
+async function editCategory() {
+    const categoryId = document.getElementById("categoryEditPost").value;
+    const newName = document.getElementById("inputCategoryEditName").value;
+    const newUrl = document.getElementById("inputCategoryEditUrl").value;
+
+    if (!newName || newName.length == 0) {
+        document.getElementById('warn_text').textContent = `Não é possível deixar uma categoria sem nome!`;
+        document.getElementById('warn_bar').style.margin = "15px";
+        document.getElementById('warn_bar').style.padding = "15px";
+
+        setTimeout(() => {
+            document.getElementById('warn_text').textContent = '';
+            document.getElementById('warn_bar').style.margin = "0px";
+            document.getElementById('warn_bar').style.padding = "0px";
+        }, 5000);
+
+        return;
+    }
+
+    try {
+        const response = await fetch(`/edit/category/${categoryId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ newName, newUrl }),
+        });
+
+        const data = await response.json();
+
+        console.log('Success:', data);
+        document.getElementById('sucess_text').textContent = 'A categoria foi editada com sucesso!';
+        document.getElementById('sucess_bar').style.margin = "15px";
+        document.getElementById('sucess_bar').style.padding = "15px";
+
+        setTimeout(() => {
+            location.reload();
+            document.getElementById('sucess_text').textContent = '';
+            document.getElementById('sucess_bar').style.margin = "0px";
+            document.getElementById('sucess_bar').style.padding = "0px";
+        }, 5000)
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+async function deleteCategory() {
+    const categoryId = document.getElementById("categoryEditPost").value;
+
+    try {
+        const response = await fetch(`/delete/category/${categoryId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ categoryId }),
+        });
+
+        const data = await response.json();
+
+        console.log('Success:', data);
+        document.getElementById('sucess_text').textContent = 'A categoria foi excluída com sucesso!';
+        document.getElementById('sucess_bar').style.margin = "15px";
+        document.getElementById('sucess_bar').style.padding = "15px";
+
+        setTimeout(() => {
+            location.reload();
+            document.getElementById('sucess_text').textContent = '';
+            document.getElementById('sucess_bar').style.margin = "0px";
+            document.getElementById('sucess_bar').style.padding = "0px";
+        }, 5000)
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+
+async function prepareEditCategory() {
+    const categorySelect = document.getElementById("categoryEditPost");
+    const selectedCategoryId = categorySelect.value;
+
+    if (selectedCategoryId) {
+        const response = await fetch(`/category/${selectedCategoryId}`);
+        const categoryDetails = await response.json();
+
+        document.getElementById("inputCategoryEditName").value = categoryDetails.categoryName;
+        document.getElementById("inputCategoryEditUrl").value = categoryDetails.categoryUrl;
+
+        document.getElementById("inputCategoryEditName").style.display = "block";
+        document.getElementById("inputCategoryEditUrl").style.display = "block";
+        document.getElementById("inputCategoryEditName").removeAttribute("disabled");
+        document.getElementById("inputCategoryEditUrl").removeAttribute("disabled");
+        document.getElementById("confirmCategoryEditButton").style.display = "inline-block";
+        document.getElementById("confirmCategoryDeleteButton").style.display = "inline-block";
+    }
+}
+
 function setClosestNoteInFocus() {
     const closestNote = getClosestNote();
 
     if (closestNote) {
-        // Remove a classe 'focused' de todas as postagens
         const allNotes = document.querySelectorAll('.notes');
         allNotes.forEach(note => note.classList.remove('focused'));
 
-        // Adiciona a classe 'focused' à postagem mais próxima ao centro
         closestNote.classList.add('focused');
     }
 }
@@ -693,3 +774,114 @@ fetch('/post')
 
 window.addEventListener('scroll', setClosestNoteInFocus);
 setClosestNoteInFocus();
+
+async function selectCategory(postId) {
+    try {
+        // Obter informações da postagem
+        const posts = await fetch('/post');
+        const postagens = await posts.json();
+        const postagem = postagens.find(post => post.postId === postId);
+
+        // Obter todas as categorias
+        const cats = await fetch('/category');
+        const categorias = await cats.json();
+
+        // Criar o conteúdo do modal
+        const modalContent = document.createElement('div');
+        modalContent.style.textAlign = "left";
+        modalContent.innerHTML = '<p class="w3-text-white" style="font-size: 24px; margin-top: -10px;"><b style="color: #4070DC;">Categorias!</b></p><br><p class="w3-text-white" style="font-size: 16px; margin-top: -50px;">Você pode marcar/desmarcar as categorias que quer adicionar/remover da postagem.</p > ';
+
+        // Adicionar checkboxes para cada categoria
+        categorias.forEach(categoria => {
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = categoria.categoryId;
+            checkbox.id = `categoria_${categoria.categoryId}`;
+
+            const label = document.createElement('label');
+            label.htmlFor = `categoria_${categoria.categoryId}`;
+            label.textContent = categoria.categoryName;
+            label.style.marginLeft = "5px";
+            label.style.color = "#fff";
+
+            // Verificar se a postagem já possui a categoria e marcar a checkbox
+            if (postagem.categories.includes(categoria.categoryId)) {
+                checkbox.checked = true;
+            }
+
+            modalContent.appendChild(checkbox);
+            modalContent.appendChild(label);
+            modalContent.appendChild(document.createElement('br'));
+        });
+
+        // Adicionar botão para salvar as categorias selecionadas
+        const salvarButton = document.createElement('button');
+        //background-color: #4070DC; color: #fff; padding: 10px; border-radius: 10px; border: 0px; cursor: pointer;
+        salvarButton.style.backgroundColor = "#4070DC";
+        salvarButton.style.color = "#fff";
+        salvarButton.style.padding = "10px";
+        salvarButton.style.borderRadius = "10px";
+        salvarButton.style.border = "0px";
+        salvarButton.style.cursor = "pointer";
+        salvarButton.style.marginTop = "15px";
+        salvarButton.textContent = 'Salvar';
+        salvarButton.addEventListener('click', () => salvarCategorias(postId));
+        modalContent.appendChild(salvarButton);
+
+        // Abrir o modal
+        abrirModal(modalContent);
+    } catch (error) {
+        console.error('Erro ao abrir modal de seleção de categoria:', error);
+        // Tratar o erro conforme necessário
+    }
+}
+
+// Função para salvar as categorias selecionadas
+async function salvarCategorias(postId) {
+    try {
+        // Obter as checkboxes selecionadas
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        const categoriasSelecionadas = Array.from(checkboxes)
+            .filter(checkbox => checkbox.checked)
+            .map(checkbox => checkbox.value);
+
+        // Enviar as categorias selecionadas para o servidor
+        const response = await fetch(`/updateCategory/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ categoryIds: categoriasSelecionadas })
+        });
+
+        if (response.ok) {
+            console.log('Categorias atualizadas com sucesso.');
+        } else {
+            console.error('Erro ao atualizar categorias:', response.statusText);
+        }
+
+        // Fechar o modal após salvar
+        fecharModal();
+    } catch (error) {
+        console.error('Erro ao salvar categorias:', error);
+        // Tratar o erro conforme necessário
+    }
+}
+
+// Função para abrir o modal
+function abrirModal(content) {
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modal-content');
+    modalContent.innerHTML = '';
+
+    modalContent.appendChild(content);
+    modal.style.display = 'flex';
+}
+
+// Função para fechar o modal
+function fecharModal() {
+    const modal = document.getElementById('modal');
+    modal.style.display = 'none';
+
+    location.reload();
+}
